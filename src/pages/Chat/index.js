@@ -18,7 +18,7 @@ import {
 } from 'reactstrap';
 
 import ScrollToBottom from 'react-scroll-to-bottom';
-import '../Styles.css';
+import "./style.css";
 
 import Moment from 'moment';
 import io from 'socket.io-client'
