@@ -10,9 +10,12 @@ import {
     Input
 } from 'reactstrap';
 
+import {signin} from '../utils/auth'
+import api from '../utils/api'
+
 function Login() {
     const history = useHistory();
-    const [creds, setCreds] = useState({ nickname: '' });
+    const [creds, setCreds] = useState({ username: '', password:'' });
     const [showLoading, setShowLoading] = useState(false);
 
     const onChange = (e) => {
@@ -20,30 +23,34 @@ function Login() {
         setCreds({...creds, [e.target.name]: e.target.value});
     }
 
-    const login = (e) => {
+    const login = async (e) => {
         e.preventDefault();
         setShowLoading(true);
-        alert('not implemented')
+        const {data} = await api.post('/users', creds)
+        signin(data.token);
+        console.log(data)
+        alert(data.message)
         history.push('/chat');
     };
 
     return (
         <div>
-            {showLoading &&
-                <Spinner color="primary" />
-            }
+           
             <Jumbotron>
                 <Form onSubmit={login}>
                     <FormGroup>
                         <Label>Username</Label>
-                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Username" value={creds.nickname} onChange={onChange} />
+                        <Input type="text" name="username" id="username" placeholder="Enter Your Username" value={creds.username} onChange={onChange} />
                         <Label>Password</Label>
-                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Password" value={creds.nickname} onChange={onChange} />
+                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" value={creds.password} onChange={onChange} />
                     </FormGroup>
                     <Button variant="primary" type="submit">
                         Login
                     </Button>
                 </Form>
+                {showLoading &&
+                <Spinner color="primary" />
+            }
             </Jumbotron>
         </div>
     );

@@ -8,8 +8,8 @@ import {
   useLocation
 } from 'react-router-dom'
 
-import Login from './components/Login'
-import Chat from './components/Chat'
+import Login from './pages/Login'
+import Chat from './pages/Chat'
 
 function App(){
   // let location = useLocation()
@@ -19,7 +19,7 @@ function App(){
       <div>
         <Redirect 
           to={{
-            pathname:'/chat'
+            pathname:'/login'
           }}
         />
         <Switch>

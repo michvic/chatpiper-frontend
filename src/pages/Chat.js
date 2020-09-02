@@ -27,7 +27,7 @@ function Chat(props) {
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [nickname, setNickname] = useState('');
-    const [newchat, setNewchat] = useState({username: '', message: '', date: '' });
+    const [newchat, setNewchat] = useState({username: '', text: '', date: '' });
     const history = useHistory();
 
     const [socket, setSocket] = useState(null);
@@ -46,6 +46,7 @@ function Chat(props) {
         })
 
         socket.on('receivedMessage', chat => {
+            console.log(chat)
             chats.push(chat)
         })
 
@@ -70,15 +71,10 @@ function Chat(props) {
     const submitMessage = (e) => {
         e.preventDefault();
         const chat = newchat;
-        console.log(chat)
-        chat.nickname = nickname;
+        chat.username = nickname;
         chat.date = Moment(new Date()).format('DD/MM/YYYY HH:mm:ss');
-        chat.type = 'message';
         socket.emit('sendMessage', chat)
-        chats.push(chat)
-        // const newMessage = firebase.database().ref('chats/').push();
-        // newMessage.set(chat);
-        setNewchat({ nickname: '', message: '', date: '', type: '' });
+        setNewchat({ username: '', text: '', date: ''});
     };
 
     return (
@@ -99,7 +95,7 @@ function Chat(props) {
                             {users.map((item, idx) => (
                                 <Card key={idx} className="UsersCard">
                                     <CardBody>
-                                        <CardSubtitle>{item.nickname}</CardSubtitle>
+                                        <CardSubtitle>{item.username}</CardSubtitle>
                                     </CardBody>
                                 </Card>
                             ))}
@@ -112,15 +108,15 @@ function Chat(props) {
                                     {item.type === 'join' || item.type === 'exit' ?
                                         <div className="ChatStatus">
                                             <span className="ChatDate">{item.date}</span>
-                                            <span className="ChatContentCenter">{item.message}</span>
+                                            <span className="ChatContentCenter">{item.text}</span>
                                         </div> :
                                         <div className="ChatMessage">
-                                            <div className={`${item.nickname === nickname ? "RightBubble" : "LeftBubble"}`}>
-                                                {item.nickname === nickname ?
-                                                    <span className="MsgName">Me</span> : <span className="MsgName">{item.nickname}</span>
+                                            <div className={`${item.username === nickname ? "RightBubble" : "LeftBubble"}`}>
+                                                {item.username === nickname ?
+                                                    <span className="MsgName">Me</span> : <span className="MsgName">{item.username}</span>
                                                 }
                                                 <span className="MsgDate"> at {item.date}</span>
-                                                <p>{item.message}</p>
+                                                <p>{item.text}</p>
                                             </div>
                                         </div>
                                     }
@@ -130,7 +126,7 @@ function Chat(props) {
                         <footer className="StickyFooter">
                             <Form className="MessageForm" onSubmit={submitMessage}>
                                 <InputGroup>
-                                    <Input type="text" name="message" id="message" placeholder="Enter message here" value={newchat.message} onChange={onChange} />
+                                    <Input type="text" name="text" id="text" placeholder="Enter message here" value={newchat.text} onChange={onChange} />
                                     <InputGroupAddon addonType="append">
                                         <Button variant="primary" type="submit">Send</Button>
                                     </InputGroupAddon>
