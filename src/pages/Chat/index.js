@@ -43,7 +43,7 @@ function Chat(props) {
     const user = useSelector((state) => state.user);
 
     useEffect(() => {
-        setSocket(io('http://localhost:4000'));
+        setSocket(io(process.env.REACT_APP_API_URI));
     }, []);
 
     useEffect(() => {

@@ -35,12 +35,14 @@ function Login() {
             e.preventDefault();
             setShowLoading(true);
             const {data} = await api.post('/singin', creds)
+
             signin(data.token);
             dispatch(login({id:data.id, username: data.username, profile: data.profile}))
-    
+     
             history.push('/chat');
-        } catch ({response}) {
-            alert(response.data.error)
+        } catch (err) {
+            console.log(err)
+            // alert(response.data.error)
             setShowLoading(false)
             // history.push("/login");
             // window.location.reload();
