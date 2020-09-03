@@ -36,7 +36,7 @@ function Login() {
             setShowLoading(true);
             const {data} = await api.post('/singin', creds)
             signin(data.token);
-            dispatch(login({id:data.id, username: data.username}))
+            dispatch(login({id:data.id, username: data.username, profile: data.profile}))
     
             history.push('/chat');
         } catch ({response}) {

@@ -47,7 +47,7 @@ function Chat(props) {
     }, []);
 
     useEffect(() => {
-        setNickname(user.username)
+        
         api.get('/messages')
         .then((response) => {
             setChats(response.data.messages)
@@ -55,6 +55,7 @@ function Chat(props) {
     },[])
     useEffect( () => {
         if (!socket) return;
+        setNickname(user.username)
         socket.on('fetchMessage', () => {
             api.get('/messages')
             .then(response => {
