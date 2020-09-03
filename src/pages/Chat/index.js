@@ -97,13 +97,13 @@ function Chat(props) {
                                     </CardSubtitle>
                                 </CardBody>
                             </Card>
-                            {users.map((item, idx) => (
+                            {/* {users.map((item, idx) => (
                                 <Card key={idx} className="UsersCard">
                                     <CardBody>
                                         <CardSubtitle>{item.username}</CardSubtitle>
                                     </CardBody>
                                 </Card>
-                            ))}
+                            ))} */}
                         </div>
                     </Col>
                     <Col xs="8">
