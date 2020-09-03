@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import {
     useHistory,
-    useParams
 } from "react-router-dom";
+
 import {
     Container,
     Row,
@@ -31,14 +31,14 @@ import api from '../../service/api'
 
 function Chat(props) {
     const [chats, setChats] = useState([]);
-    const [users, setUsers] = useState([]);
+    // const [users, setUsers] = useState([]);
     const [nickname, setNickname] = useState('');
     const [newchat, setNewchat] = useState({ username: '', text: '', date: '' });
-    const history = useHistory();
+    // const history = useHistory();
 
     const [socket, setSocket] = useState(null);
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     const user = useSelector((state) => state.user);
 
