@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
     useHistory,
@@ -23,58 +24,61 @@ import "./style.css";
 import Moment from 'moment';
 import io from 'socket.io-client'
 
+import { useSelector, useDispatch } from "react-redux";
+
+
+import api from '../../service/api'
+
 function Chat(props) {
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [nickname, setNickname] = useState('');
-    const [newchat, setNewchat] = useState({username: '', text: '', date: '' });
+    const [newchat, setNewchat] = useState({ username: '', text: '', date: '' });
     const history = useHistory();
 
     const [socket, setSocket] = useState(null);
-    const [socketConnected, setSocketConnected] = useState(false);
-    const [dt, setDt] = useState('');
+
+    const dispatch = useDispatch();
+
+    const user = useSelector((state) => state.user);
 
     useEffect(() => {
         setSocket(io('http://localhost:4000'));
     }, []);
 
     useEffect(() => {
+        setNickname(user.username)
+        api.get('/messages')
+        .then((response) => {
+            setChats(response.data.messages)
+        }) 
+    },[])
+    useEffect( () => {
         if (!socket) return;
-
-        socket.on('previousMessages', chats => {
-            setChats(chats)
+        socket.on('fetchMessage', () => {
+            api.get('/messages')
+            .then(response => {
+                setChats(response.data.messages)
+            })
         })
-
-        socket.on('receivedMessage', chat => {
-            console.log(chat)
-            chats.push(chat)
-        })
-
-        socket.on('connect', () => {
-            setSocketConnected(socket.connected);
-        });
-        socket.on('disconnect', () => {
-            setSocketConnected(socket.connected);
-        });
-
-        socket.on("getDate", data => {
-            setDt(data);
-        });
-
-    }, [socket,chats]);
+    });
 
     const onChange = (e) => {
         e.persist();
         setNewchat({ ...newchat, [e.target.name]: e.target.value });
     }
 
-    const submitMessage = (e) => {
+    const submitMessage = async (e) => {
         e.preventDefault();
-        const chat = newchat;
-        chat.username = nickname;
-        chat.date = Moment(new Date()).format('DD/MM/YYYY HH:mm:ss');
-        socket.emit('sendMessage', chat)
-        setNewchat({ username: '', text: '', date: ''});
+
+        socket.emit('newMessage',)
+        await api.post('/messages', {
+            userId: user.id,
+            text: newchat.text,
+            username: nickname,
+            date: Moment(new Date()).format('DD/MM/YYYY HH:mm:ss'),
+        })
+        setNewchat({ username: '', text: '', date: '' });
     };
 
     return (
@@ -105,21 +109,17 @@ function Chat(props) {
                         <ScrollToBottom className="ChatContent">
                             {chats.map((item, idx) => (
                                 <div key={idx} className="MessageBox">
-                                    {item.type === 'join' || item.type === 'exit' ?
-                                        <div className="ChatStatus">
-                                            <span className="ChatDate">{item.date}</span>
-                                            <span className="ChatContentCenter">{item.text}</span>
-                                        </div> :
-                                        <div className="ChatMessage">
-                                            <div className={`${item.username === nickname ? "RightBubble" : "LeftBubble"}`}>
-                                                {item.username === nickname ?
-                                                    <span className="MsgName">Me</span> : <span className="MsgName">{item.username}</span>
-                                                }
-                                                <span className="MsgDate"> at {item.date}</span>
-                                                <p>{item.text}</p>
-                                            </div>
+
+                                    <div className="ChatMessage">
+                                        <div className={`${item.username === nickname ? "RightBubble" : "LeftBubble"}`}>
+                                            {item.username === nickname ?
+                                                <span className="MsgName">Me</span> : <span className="MsgName">{item.username}</span>
+                                            }
+                                            <span className="MsgDate"> at {item.date}</span>
+                                            <p>{item.text}</p>
                                         </div>
-                                    }
+                                    </div>
+                            
                                 </div>
                             ))}
                         </ScrollToBottom>

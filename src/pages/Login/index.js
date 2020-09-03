@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
     Jumbotron,
     Spinner,
@@ -12,31 +13,33 @@ import {
 
 import "./style.css";
 
-import {signin} from '../../utils/auth'
-import api from '../../utils/api'
+import {signin} from '../../service/auth'
+import api from '../../service/api'
+
+import {login} from '../../store/actions'
 
 function Login() {
     const history = useHistory();
     const [creds, setCreds] = useState({ username: '', password:'' });
     const [showLoading, setShowLoading] = useState(false);
 
-
+    const dispatch = useDispatch();
+    
     const onChange = (e) => {
         e.persist();
         setCreds({...creds, [e.target.name]: e.target.value});
     }
 
-    const login = async (e) => {
+    const subimitLogin = async (e) => {
         try {
             e.preventDefault();
             setShowLoading(true);
-            const {data} = await api.post('/users', creds)
+            const {data} = await api.post('/singin', creds)
             signin(data.token);
-            console.log(data)
-            alert(data.message)
+            dispatch(login({id:data.id, username: data.username}))
+    
             history.push('/chat');
         } catch ({response}) {
-            console.log(response)
             alert(response.data.error)
             setShowLoading(false)
             // history.push("/login");
@@ -50,7 +53,7 @@ function Login() {
                <h1>Welcome ChatPipe</h1>
            </div>
             <Jumbotron className='conteiner'>
-                <Form onSubmit={login}>
+                <Form onSubmit={subimitLogin}>
                     <FormGroup>
                         <Label>Username</Label>
                         <Input type="text" name="username" id="username" placeholder="Enter Your Username" value={creds.username} onChange={onChange} />
